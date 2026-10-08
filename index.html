@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rally Up - tìm người chơi và câu lạc bộ tennis trên khắp Việt Nam.">
+  <title>Rally Up - Lên kèo tennis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=3">
+  <style>.official-logo{position:absolute;z-index:1;right:clamp(24px,9vw,140px);top:42px;width:240px;height:240px;object-fit:cover;border-radius:28px;box-shadow:0 28px 70px rgba(0,0,0,.28)}@media(max-width:800px){.official-logo{width:160px;height:160px;right:20px;top:38px;opacity:.72}}@media(max-width:540px){.official-logo{display:none}}</style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Rally Up - Trang chủ"><img src="rally-up-logo-transparent.svg" alt="Rally Up"></a>
+    <p class="topline">Rally players. Rally together.</p>
+    <a class="join-link" id="submit-link" href="#submit">Đăng kèo <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="finder-title">
+      <p class="eyebrow"><span></span> CỘNG ĐỒNG TENNIS VIỆT NAM</p>
+      <div class="hero-copy"><h1 id="finder-title">Tìm đúng hội.<br><em>Rally</em> hết mình.</h1><p id="mode-description">Khám phá các CLB và kèo đang tìm thêm người chơi.</p></div>
+      <img class="official-logo" src="rallyup-official-logo.png" alt="Rally Up Official Logo">
+      <div class="mode-tabs" role="tablist" aria-label="Chọn nhu cầu tìm kiếm">
+        <button class="mode-tab is-active" id="clubs-tab" type="button" role="tab" aria-selected="true" data-mode="clubs"><span class="tab-index">01</span> CLB tìm người chơi</button>
+        <button class="mode-tab" id="players-tab" type="button" role="tab" aria-selected="false" data-mode="players"><span class="tab-index">02</span> Người chơi tìm CLB</button>
+      </div>
+    </section>
+    <section class="finder" id="listings" aria-labelledby="listings-title">
+      <div class="finder-head"><div><p class="section-label" id="section-label">CÁC CLB ĐANG TUYỂN</p><h2 id="listings-title">Lên kèo cùng hội mới.</h2></div><p class="data-status" id="data-status">Đang tải danh sách</p></div>
+      <div class="search-panel">
+        <label class="search-field" for="search-input"><span class="sr-only">Tìm kiếm</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m16 16 4.2 4.2"></path></svg><input id="search-input" type="search" placeholder="Tìm theo tên, sân hoặc khu vực…" autocomplete="off"></label>
+        <div class="filter-row" aria-label="Lọc danh sách">
+          <label><span>Khu vực</span><select id="city-filter"><option value="">Tất cả tỉnh, thành</option></select></label>
+          <label><span>Quận / huyện</span><select id="district-filter"><option value="">Tất cả quận, huyện</option></select></label>
+          <label><span id="intent-label">Đang tìm</span><select id="intent-filter"><option value="">Tất cả</option></select></label>
+          <label><span>Trình độ</span><select id="level-filter"><option value="">Tất cả trình độ</option></select></label>
+          <button class="clear-button" id="clear-filters" type="button" hidden>Xóa lọc</button>
+        </div>
+      </div>
+      <div class="directory-meta"><p id="result-count" aria-live="polite"></p><p id="active-note"></p></div>
+      <div id="listing-grid" class="listing-grid" aria-live="polite"></div>
+      <div id="empty-state" class="empty" hidden><span class="empty-mark">?</span><h3>Chưa có kèo phù hợp.</h3><p>Thử chọn khu vực khác hoặc xóa bộ lọc.</p><button id="empty-clear" type="button">Xóa tất cả bộ lọc</button></div>
+    </section>
+    <section class="submit-section" id="submit"><div><p class="section-label">BẠN CÓ KÈO?</p><h2>Đưa kèo của bạn<br>đến đúng người.</h2></div><a class="submit-button" id="form-link" href="https://forms.gle/VZ3aoGMtfnmYLDv46" target="_blank" rel="noopener">Đăng kèo ngay <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer><img src="rally-up-logo-transparent.svg" alt="Rally Up"><span>© <span id="year"></span> Rally Up · Lên kèo, ra sân.</span></footer>
+  <dialog class="listing-dialog" id="listing-dialog" aria-labelledby="dialog-name"><button class="dialog-close" type="button" aria-label="Đóng">×</button><div id="listing-detail"></div></dialog>
+  <script src="app.js?v=3"></script>
+</body>
+</html>
