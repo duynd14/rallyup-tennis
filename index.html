@@ -9,13 +9,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=3">
-  <style>.official-logo{position:absolute;z-index:1;right:clamp(24px,9vw,140px);top:42px;width:240px;height:240px;object-fit:cover;border-radius:28px;box-shadow:0 28px 70px rgba(0,0,0,.28)}@media(max-width:800px){.official-logo{width:160px;height:160px;right:20px;top:38px;opacity:.72}}@media(max-width:540px){.official-logo{display:none}}</style>
+  <style>.official-logo{position:absolute;z-index:1;right:clamp(24px,9vw,140px);top:42px;width:240px;height:240px;object-fit:cover;border-radius:28px;box-shadow:0 28px 70px rgba(0,0,0,.28)}.brand{width:auto!important;gap:9px;color:#fff;font:800 13px "Space Grotesk",Arial,sans-serif;letter-spacing:.08em;text-decoration:none}.brand img{width:42px!important;height:42px!important;object-fit:cover!important;border-radius:11px}.listing-card:after{display:none}.advanced-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:8px 1px 1px}.advanced-filters[hidden]{display:none}.advanced-filters label{position:relative}.advanced-filters label span{position:absolute;z-index:1;top:10px;left:13px;color:#76877c;font:800 9px Manrope,Arial,sans-serif;letter-spacing:.04em;pointer-events:none}.advanced-filters select{width:100%;height:56px;appearance:none;outline:none;border:0;border-radius:13px;padding:24px 30px 6px 13px;color:var(--ink);background:#f6f6f1;font:800 12px Manrope,Arial,sans-serif}.advanced-button{border:1px solid #dce5d8;border-radius:13px;background:#f6f6f1;color:var(--ink);font:800 11px Manrope,Arial,sans-serif;cursor:pointer}.advanced-button span{margin-left:5px;font-size:16px}.level-moichoi{background:#e2efff!important;color:#2560a7!important;border-color:#bed8f8!important}.level-coban{background:#fff1c9!important;color:#896313!important;border-color:#eddaa2!important}.level-trungcap{background:#ddf3e1!important;color:#267048!important;border-color:#b7dfc1!important}.level-kha{background:#eee5ff!important;color:#6947a1!important;border-color:#d9c8fa!important}.level-nangcao{background:#ffe0df!important;color:#a14243!important;border-color:#f2bab7!important}.submit-actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end}.group-button{padding:13px 17px;border:1px solid rgba(196,251,76,.55);border-radius:99px;color:var(--lime);font-size:12px;font-weight:800;text-decoration:none}@media(max-width:800px){.official-logo{width:160px;height:160px;right:20px;top:38px;opacity:.72}.advanced-filters{grid-template-columns:1fr 1fr}}@media(max-width:540px){.official-logo{display:none}.advanced-filters{grid-template-columns:1fr}.submit-actions{justify-content:flex-start}.brand img{width:36px!important;height:36px!important}}</style>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#top" aria-label="Rally Up - Trang chủ"><img src="rally-up-logo-transparent.svg" alt="Rally Up"></a>
+    <a class="brand" href="#top" aria-label="Rally Up - Trang chủ"><img src="rallyup-official-logo.png" alt="Rally Up Official Logo"><span>RALLY UP</span></a>
     <p class="topline">Rally players. Rally together.</p>
-    <a class="join-link" id="submit-link" href="#submit">Đăng kèo <span aria-hidden="true">↗</span></a>
+    <a class="join-link" id="facebook-link" href="https://www.facebook.com/groups/1340467985821608" target="_blank" rel="noopener">Vào Facebook Group <span aria-hidden="true">↗</span></a>
   </header>
   <main id="top">
     <section class="hero" aria-labelledby="finder-title">
@@ -34,16 +34,23 @@
         <div class="filter-row" aria-label="Lọc danh sách">
           <label><span>Khu vực</span><select id="city-filter"><option value="">Tất cả tỉnh, thành</option></select></label>
           <label><span>Quận / huyện</span><select id="district-filter"><option value="">Tất cả quận, huyện</option></select></label>
+          <label><span>Khung giờ</span><select id="time-filter"><option value="">Mọi khung giờ</option></select></label>
+          <button class="advanced-button" id="advanced-toggle" type="button" aria-expanded="false" aria-controls="advanced-filters">Bộ lọc nâng cao <span aria-hidden="true">+</span></button>
+          <button class="clear-button" id="clear-filters" type="button" hidden>Xóa lọc</button>
+        </div>
+        <div class="advanced-filters" id="advanced-filters" hidden>
           <label><span id="intent-label">Đang tìm</span><select id="intent-filter"><option value="">Tất cả</option></select></label>
           <label><span>Trình độ</span><select id="level-filter"><option value="">Tất cả trình độ</option></select></label>
-          <button class="clear-button" id="clear-filters" type="button" hidden>Xóa lọc</button>
+          <label><span>Ngày chơi</span><select id="day-filter"><option value="">Mọi ngày</option></select></label>
+          <label><span>Nội dung chơi</span><select id="format-filter"><option value="">Tất cả nội dung</option></select></label>
+          <label><span id="group-label">Loại hình nhóm</span><select id="group-filter"><option value="">Tất cả loại nhóm</option></select></label>
         </div>
       </div>
       <div class="directory-meta"><p id="result-count" aria-live="polite"></p><p id="active-note"></p></div>
       <div id="listing-grid" class="listing-grid" aria-live="polite"></div>
       <div id="empty-state" class="empty" hidden><span class="empty-mark">?</span><h3>Chưa có kèo phù hợp.</h3><p>Thử chọn khu vực khác hoặc xóa bộ lọc.</p><button id="empty-clear" type="button">Xóa tất cả bộ lọc</button></div>
     </section>
-    <section class="submit-section" id="submit"><div><p class="section-label">BẠN CÓ KÈO?</p><h2>Đưa kèo của bạn<br>đến đúng người.</h2></div><a class="submit-button" id="form-link" href="https://forms.gle/VZ3aoGMtfnmYLDv46" target="_blank" rel="noopener">Đăng kèo ngay <span aria-hidden="true">↗</span></a></section>
+    <section class="submit-section" id="submit"><div><p class="section-label">BẠN CÓ KÈO?</p><h2>Đưa kèo của bạn<br>đến đúng người.</h2></div><div class="submit-actions"><a class="group-button" href="https://www.facebook.com/groups/1340467985821608" target="_blank" rel="noopener">Vào Facebook Group ↗</a><a class="submit-button" id="form-link" href="https://forms.gle/yVMTX4yceZs5JHp69" target="_blank" rel="noopener">Đăng kèo ngay <span aria-hidden="true">↗</span></a></div></section>
   </main>
   <footer><img src="rally-up-logo-transparent.svg" alt="Rally Up"><span>© <span id="year"></span> Rally Up · Lên kèo, ra sân.</span></footer>
   <dialog class="listing-dialog" id="listing-dialog" aria-labelledby="dialog-name"><button class="dialog-close" type="button" aria-label="Đóng">×</button><div id="listing-detail"></div></dialog>
