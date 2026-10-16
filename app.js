@@ -1,8 +1,9 @@
 const SHEET_ID = '1Ammisk3_X2bn9EAeUOHahhQkL2O8eoaNu2cIQn3SV5A';
 const SOURCES = {
-  clubs: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Approved%20Clubs`,
-  players: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Approved%20Players`
+  clubs: 'Approved Clubs',
+  players: 'Approved Players'
 };
+const GVIZ_ENDPOINT = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
 const copy = {
   singles: { description: 'Khám phá các CLB đánh đơn đang tìm thêm người chơi.', label: '01 · CLB ĐÁNH ĐƠN', title: 'Tìm kèo đơn, ra sân ngay.', search: 'Tìm CLB đánh đơn, sân hoặc khu vực…', intent: 'Đang tìm', count: 'CLB đánh đơn đang hiển thị', empty: 'Chưa có CLB đánh đơn phù hợp.' },
   doubles: { description: 'Khám phá các CLB đánh đôi đang mở kèo và tìm thêm đồng đội.', label: '02 · CLB ĐÁNH ĐÔI', title: 'Có đồng đội, vui hơn.', search: 'Tìm CLB đánh đôi, sân hoặc khu vực…', intent: 'Đang tìm', count: 'CLB đánh đôi đang hiển thị', empty: 'Chưa có CLB đánh đôi phù hợp.' },
@@ -20,7 +21,7 @@ const unique = values => [...new Set(values.filter(Boolean))].sort((a, b) => a.l
 const safeUrl = value => { const raw = String(value || '').trim(); if (!raw) return ''; if (/^(https?:|mailto:|tel:)/i.test(raw)) return raw; if (/^[+\d\s()-]{7,}$/.test(raw)) return `tel:${raw.replace(/[^+\d]/g, '')}`; return `https://${raw}`; };
 const isClubMode = () => mode !== 'players';
 const normalised = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-const playsFormat = (item, format) => split(item.format).some(value => normalised(value).includes(format));
+const playsFormat = (item, format) => split(item.format).some(value => normalised(value).includes(normalised(format)));
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const digitsOnly = value => String(value || '').replace(/\D/g, '');
 function contactLink(item) {
@@ -34,20 +35,6 @@ function contactLink(item) {
   if ((method.includes('dien thoai') || method.includes('phone') || method.includes('goi')) && phone) return { href: `tel:${raw.replace(/[^+\d]/g, '')}`, label: 'Gọi điện' };
   if (phone) return { href: `tel:${raw.replace(/[^+\d]/g, '')}`, label: 'Gọi điện' };
   return { href: safeUrl(raw), label: `Liên hệ qua ${item.contactMethod}` };
-}
-
-function parseCSV(text) {
-  const rows = []; let row = []; let cell = ''; let quoted = false;
-  for (let i = 0; i < text.length; i += 1) {
-    const char = text[i], next = text[i + 1];
-    if (char === '"' && quoted && next === '"') { cell += '"'; i += 1; }
-    else if (char === '"') quoted = !quoted;
-    else if (char === ',' && !quoted) { row.push(cell); cell = ''; }
-    else if ((char === '\n' || char === '\r') && !quoted) { if (char === '\r' && next === '\n') i += 1; if (row.length || cell) { row.push(cell); rows.push(row); row = []; cell = ''; } }
-    else cell += char;
-  }
-  if (row.length || cell) { row.push(cell); rows.push(row); }
-  return rows.slice(1);
 }
 
 function normaliseClub(row, index) {
@@ -121,7 +108,29 @@ function showDetail(id) {
   detail.innerHTML = `<div class="detail-inner"><span class="pill">${escapeHtml(pillText(item))}</span><h2 id="dialog-name">${escapeHtml(title)}</h2><p class="detail-place">${escapeHtml(location || 'Khu vực đang cập nhật')}</p>${item.description ? `<p class="detail-description">${escapeHtml(item.description)}</p>` : ''}<ul class="detail-list">${fields.filter(([,value]) => value).map(([label,value]) => `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(value)}</span></li>`).join('')}</ul><div class="detail-actions">${contact.href ? `<a href="${escapeHtml(contact.href)}" ${contact.href.startsWith('mailto:') || contact.href.startsWith('tel:') ? '' : 'target="_blank" rel="noopener"'}>${escapeHtml(contact.label)} ↗</a>` : '<span class="detail-place">Thông tin liên hệ đang cập nhật.</span>'}</div></div>`;
   dialog.showModal();
 }
-async function fetchRows(url) { const response = await fetch(`${url}&cache=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error('Không thể tải dữ liệu'); return parseCSV(await response.text()); }
+function fetchRows(sheetName) {
+  return new Promise((resolve, reject) => {
+    const callback = `rallyUpSheet${Date.now()}${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement('script');
+    const cleanup = () => { script.remove(); delete window[callback]; };
+    const timeout = window.setTimeout(() => { cleanup(); reject(new Error('Tải dữ liệu quá thời gian chờ')); }, 15000);
+    window[callback] = response => {
+      window.clearTimeout(timeout); cleanup();
+      if (response.status !== 'ok') { reject(new Error('Không thể tải dữ liệu')); return; }
+      const columns = response.table?.cols || [];
+      const rows = (response.table?.rows || []).map(row => columns.map((_, index) => {
+        const cell = row.c?.[index];
+        return cell?.f ?? cell?.v ?? '';
+      }));
+      resolve(rows);
+    };
+    script.async = true;
+    script.onerror = () => { window.clearTimeout(timeout); cleanup(); reject(new Error('Không thể tải dữ liệu')); };
+    const query = new URLSearchParams({ sheet: sheetName, tqx: `out:json;responseHandler:${callback}`, cache: Date.now().toString() });
+    script.src = `${GVIZ_ENDPOINT}?${query.toString()}`;
+    document.head.append(script);
+  });
+}
 async function loadListings() {
   try { const [clubRows, playerRows] = await Promise.all([fetchRows(SOURCES.clubs), fetchRows(SOURCES.players)]); const clubs = approved(clubRows, normaliseClub); listings.singles = clubs.filter(item => playsFormat(item, 'đơn')); listings.doubles = clubs.filter(item => playsFormat(item, 'đôi')); listings.players = approved(playerRows, normalisePlayer); el('data-status').textContent = 'Dữ liệu mới nhất'; }
   catch (error) { el('data-status').textContent = 'Chưa tải được dữ liệu'; }
